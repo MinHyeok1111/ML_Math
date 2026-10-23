@@ -18,6 +18,8 @@ import torch.nn.functional as F
 import torchvision.transforms.v2.functional as TF
 from torchvision.datasets import CIFAR10
 
+from prepare_cifar10 import ensure_cifar10
+
 MEAN = (0.4914, 0.4822, 0.4465)
 STD = (0.2470, 0.2435, 0.2616)
 NUM_CLASSES = 10
@@ -31,8 +33,9 @@ class CIFAR10GPU:
     """
 
     def __init__(self, root, device):
-        train = CIFAR10(root, train=True, download=True)
-        test = CIFAR10(root, train=False, download=True)
+        ensure_cifar10(root)
+        train = CIFAR10(root, train=True, download=False)
+        test = CIFAR10(root, train=False, download=False)
         self.device = torch.device(device)
         self.x_train = torch.from_numpy(train.data).permute(0, 3, 1, 2).contiguous().to(self.device)
         self.y_train = torch.tensor(train.targets, device=self.device)
